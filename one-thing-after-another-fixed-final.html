@@ -7837,7 +7837,7 @@ function rdMonthStreak(actType,field,target){
     const tot=AppState.activities.filter(a=>a.type==='reading'&&a.activity_type===actType&&a.date.startsWith(ms)).reduce((s,a)=>s+(a[field]||0),0);
     if(tot>=target){streak++;m--;if(m<0){m=11;y--;}}else break;}
   return streak;}
-
+function rdWeekStreak(actType,field,target){function wkStart(d){const t=new Date(d);const day=t.getDay()||7;t.setDate(t.getDate()-day+1);return t;}function wkDates(d){const s=wkStart(d);const arr=[];for(let i=0;i<7;i++){const dd=new Date(s);dd.setDate(s.getDate()+i);arr.push(iso(dd));}return arr;}const curWk=wkDates(TODAY);const curTot=AppState.activities.filter(a=>a.type==='reading'&&a.activity_type===actType&&curWk.includes(a.date)).reduce((s,a)=>s+(a[field]||0),0);let streak=curTot>=target?1:0;const base=wkStart(TODAY);for(let i=1;i<520;i++){const ws=new Date(base);ws.setDate(base.getDate()-i*7);const wk=wkDates(ws);const tot=AppState.activities.filter(a=>a.type==='reading'&&a.activity_type===actType&&wk.includes(a.date)).reduce((s,a)=>s+(a[field]||0),0);if(tot>=target)streak++;else break;}return streak;}
 function setRdType(type){
   document.querySelectorAll('.rd-type-btn').forEach(b=>b.classList.toggle('active',b.dataset.type===type));
   ['rd-fg-book','rd-fg-pages'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=type==='reading'?'':'none';});
@@ -7852,19 +7852,17 @@ function renderReadingHome(el,sliderHtml){
   const words30=rd30.filter(a=>a.activity_type==='writing').reduce((s,a)=>s+(a.words_written||0),0);
   const editMins30=rd30.filter(a=>a.activity_type==='editing').reduce((s,a)=>s+(a.duration_min||0),0);
   const editDisp=editMins30>=60?(editMins30/60).toFixed(1)+'h':editMins30+'m';
-  const curMs=`${t.getFullYear()}-${String(t.getMonth()+1).padStart(2,'0')}`;
-  const moActs=rdAll.filter(a=>a.date.startsWith(curMs));
-  const moPgs=moActs.filter(a=>a.activity_type==='reading').reduce((s,a)=>s+(a.pages_read||0),0);
-  const moWds=moActs.filter(a=>a.activity_type==='writing').reduce((s,a)=>s+(a.words_written||0),0);
-  const pgPct=Math.min(moPgs/100*100,100).toFixed(1);
-  const wdPct=Math.min(moWds/1000*100,100).toFixed(1);
-  const pgStreak=rdMonthStreak('reading','pages_read',100);
-  const wdStreak=rdMonthStreak('writing','words_written',1000);
+  const wd=getWeekDates();
+  const wkRd=rdAll.filter(a=>wd.includes(a.date)).sort((a,b)=>b.date.localeCompare(a.date)||(b.id||'').localeCompare(a.id||''));
+  const moPgs=wkRd.filter(a=>a.activity_type==='reading').reduce((s,a)=>s+(a.pages_read||0),0);
+  const moWds=wkRd.filter(a=>a.activity_type==='writing').reduce((s,a)=>s+(a.words_written||0),0);
+  const pgPct=Math.min(moPgs/25*100,100).toFixed(1);
+  const wdPct=Math.min(moWds/250*100,100).toFixed(1);
+  const pgStreak=rdWeekStreak('reading','pages_read',25);
+  const wdStreak=rdWeekStreak('writing','words_written',250);
   const sBadge=(n,col)=>n===0
     ?`<span class="rd-streak-badge" style="background:color-mix(in oklab,${col} 10%,var(--bg-2));color:${col}">No streak yet</span>`
     :`<span class="rd-streak-badge" style="background:color-mix(in oklab,${col} 10%,var(--bg-2));color:${col}">${n} month${n>1?'s':''}</span>`;
-  const wd=getWeekDates();
-  const wkRd=rdAll.filter(a=>wd.includes(a.date)).sort((a,b)=>b.date.localeCompare(a.date)||(b.id||'').localeCompare(a.id||''));
   // ── Weekly time breakdown for donut ─────────────────────────────────────────
   const wkReadMins=wkRd.filter(a=>!a.activity_type||a.activity_type==='reading').reduce((s,a)=>s+(a.duration_min||0),0);
   const wkWriteMins=wkRd.filter(a=>a.activity_type==='writing').reduce((s,a)=>s+(a.duration_min||0),0);
@@ -7890,12 +7888,9 @@ function renderReadingHome(el,sliderHtml){
     const stat=a.activity_type==='reading'&&a.pages_read?a.pages_read+' pages':a.activity_type==='writing'&&a.words_written?a.words_written.toLocaleString()+' words':a.duration_min?a.duration_min+'m':'';
     return`<div class="feed-card"><div class="rd-feed-icon" style="background:color-mix(in oklab,${col} 12%,var(--bg-3));color:${col}">${ico}</div><div class="feed-body"><div class="feed-ttl">${TL[a.activity_type]||a.activity_type}</div><div class="feed-meta">${meta}${a.notes?' · '+a.notes.slice(0,30):''}</div></div>${stat?`<div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;align-self:center">${stat}</div>`:''}</div>`;
   }).join(''):`<div style="color:var(--text-2);font-size:13px;padding:12px 0">No sessions yet. <button onclick="setLogMode('reading');navigate('#log')" style="color:var(--accent);background:none;border:none;cursor:pointer;font-weight:600;font-family:var(--font-ui)">Log your first session</button></div>`;
-  const MNS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-  const moName=`${MNS[t.getMonth()]} ${t.getFullYear()}`;
   el.innerHTML=sliderHtml+`
   <div style="margin-bottom:16px;padding-bottom:0">
-    <div style="font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--text);line-height:1.2;letter-spacing:-.02em">${(()=>{const _d=new Date();return _d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});})()}</div>
-  </div>
+    div>
   <div class="rd-kpi-row">
     <div class="kpi-card">
       <div class="kpi-lbl">Pages Read</div>
@@ -7917,22 +7912,22 @@ function renderReadingHome(el,sliderHtml){
   <div style="margin-bottom:16px">
     <div class="rd-prog-wrap">
       <div class="rd-prog-hdr">
-        <span class="rd-prog-title">Reading — ${moName}</span>
-        <span class="rd-prog-vals"><span class="num">${moPgs}</span> / 100 pages</span>
+        <span class="rd-prog-title">Reading — this week</span>
+        <span class="rd-prog-vals"><span class="num">${moPgs}</span> / 25 pages</span>
       </div>
       <div class="rd-bar-track"><div class="rd-bar-fill" style="background:var(--accent);width:${pgPct}%"></div></div>
       <div class="rd-streak-row">${sBadge(pgStreak,'var(--accent)')}
-        <span style="font-size:11px;color:var(--text-3)">consecutive months ≥ 100 pages</span>
+        <span style="font-size:11px;color:var(--text-3)">consecutive weeks ≥ 25 pages</span>
       </div>
     </div>
     <div class="rd-prog-wrap">
       <div class="rd-prog-hdr">
-        <span class="rd-prog-title">Writing — ${moName}</span>
-        <span class="rd-prog-vals"><span class="num">${moWds.toLocaleString()}</span> / 1,000 words</span>
+        <span class="rd-prog-title">Writing — this week</span>
+        <span class="rd-prog-vals"><span class="num">${moWds.toLocaleString()}</span> / 250 words</span>
       </div>
       <div class="rd-bar-track"><div class="rd-bar-fill" style="background:#8b5cf6;width:${wdPct}%"></div></div>
       <div class="rd-streak-row">${sBadge(wdStreak,'#8b5cf6')}
-        <span style="font-size:11px;color:var(--text-3)">consecutive months ≥ 1,000 words</span>
+        <span style="font-size:11px;color:var(--text-3)">consecutive weeks ≥ 250 words</span>
       </div>
     </div>
   </div>
@@ -11655,8 +11650,7 @@ document.addEventListener('change',function(e){
   const t=e.target;
   if(!t.classList.contains('arc-chk'))return;
   const iso=t.getAttribute('data-date');
-  if(!iso)return;
-  if(t.checked){
+const wkRd=rdAll.filter  if(t.checked){
     if(typeof APP.markComplete==='function')APP.markComplete(iso);
     if(typeof saveState==='function')saveState();
     if(typeof showToast==='function')showToast('Session marked complete ✓');
