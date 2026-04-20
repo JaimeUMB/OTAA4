@@ -7890,7 +7890,8 @@ function renderReadingHome(el,sliderHtml){
   }).join(''):`<div style="color:var(--text-2);font-size:13px;padding:12px 0">No sessions yet. <button onclick="setLogMode('reading');navigate('#log')" style="color:var(--accent);background:none;border:none;cursor:pointer;font-weight:600;font-family:var(--font-ui)">Log your first session</button></div>`;
   el.innerHTML=`<div>${sliderHtml}
   <div style="margin-bottom:16px;padding-bottom:0">
-    div>
+    <div style="font-family:var(--font-display);font-size:26px;font-weight:700;color:var(--text);line-height:1.2;letter-spacing:-.02em">${(()=>{const _d=new Date();return _d.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'});})()}</div>
+  </div>
   <div class="rd-kpi-row">
     <div class="kpi-card">
       <div class="kpi-lbl">Pages Read</div>
@@ -7957,6 +7958,7 @@ function renderReadingHome(el,sliderHtml){
   </div>
   <div class="sec-hdr"><span class="sec-ttl">This week</span><button class="sec-link" onclick="setHistFilt('reading');navigate('#history')">See all →</button></div>
   <div class="feed-list">${feedHtml}</div>
+  </div>
 </div>`;
 
   // ── Reading tracker ──────────────────────────────────────────────────────
