@@ -7888,7 +7888,7 @@ function renderReadingHome(el,sliderHtml){
     const stat=a.activity_type==='reading'&&a.pages_read?a.pages_read+' pages':a.activity_type==='writing'&&a.words_written?a.words_written.toLocaleString()+' words':a.duration_min?a.duration_min+'m':'';
     return`<div class="feed-card"><div class="rd-feed-icon" style="background:color-mix(in oklab,${col} 12%,var(--bg-3));color:${col}">${ico}</div><div class="feed-body"><div class="feed-ttl">${TL[a.activity_type]||a.activity_type}</div><div class="feed-meta">${meta}${a.notes?' · '+a.notes.slice(0,30):''}</div></div>${stat?`<div style="font-size:13px;font-weight:700;color:var(--text);white-space:nowrap;align-self:center">${stat}</div>`:''}</div>`;
   }).join(''):`<div style="color:var(--text-2);font-size:13px;padding:12px 0">No sessions yet. <button onclick="setLogMode('reading');navigate('#log')" style="color:var(--accent);background:none;border:none;cursor:pointer;font-weight:600;font-family:var(--font-ui)">Log your first session</button></div>`;
-  el.innerHTML=sliderHtml+`
+  el.innerHTML=`<div>${sliderHtml}
   <div style="margin-bottom:16px;padding-bottom:0">
     div>
   <div class="rd-kpi-row">
@@ -7956,7 +7956,8 @@ function renderReadingHome(el,sliderHtml){
     </div>
   </div>
   <div class="sec-hdr"><span class="sec-ttl">This week</span><button class="sec-link" onclick="setHistFilt('reading');navigate('#history')">See all →</button></div>
-  <div class="feed-list">${feedHtml}</div>`;
+  <div class="feed-list">${feedHtml}</div>
+</div>`;
 
   // ── Reading tracker ──────────────────────────────────────────────────────
   const _RD_SEED=[
