@@ -7856,10 +7856,10 @@ function renderReadingHome(el,sliderHtml){
   const wkRd=rdAll.filter(a=>wd.includes(a.date)).sort((a,b)=>b.date.localeCompare(a.date)||(b.id||'').localeCompare(a.id||''));
   const moPgs=wkRd.filter(a=>a.activity_type==='reading').reduce((s,a)=>s+(a.pages_read||0),0);
   const moWds=wkRd.filter(a=>a.activity_type==='writing').reduce((s,a)=>s+(a.words_written||0),0);
-  const pgPct=Math.min(moPgs/25*100,100).toFixed(1);
-  const wdPct=Math.min(moWds/250*100,100).toFixed(1);
-  const pgStreak=rdWeekStreak('reading','pages_read',25);
-  const wdStreak=rdWeekStreak('writing','words_written',250);
+  const pgPct=Math.min(moPgs/100*100,100).toFixed(1);
+  const wdPct=Math.min(moWds/1000*100,100).toFixed(1);
+  const pgStreak=rdWeekStreak('reading','pages_read',100);
+  const wdStreak=rdWeekStreak('writing','words_written',1000);
   const sBadge=(n,col)=>n===0
     ?`<span class="rd-streak-badge" style="background:color-mix(in oklab,${col} 10%,var(--bg-2));color:${col}">No streak yet</span>`
     :`<span class="rd-streak-badge" style="background:color-mix(in oklab,${col} 10%,var(--bg-2));color:${col}">${n} month${n>1?'s':''}</span>`;
@@ -7913,21 +7913,21 @@ function renderReadingHome(el,sliderHtml){
     <div class="rd-prog-wrap">
       <div class="rd-prog-hdr">
         <span class="rd-prog-title">Reading — this week</span>
-        <span class="rd-prog-vals"><span class="num">${moPgs}</span> / 25 pages</span>
+        <span class="rd-prog-vals"><span class="num">${moPgs}</span> / 100 pages</span>
       </div>
       <div class="rd-bar-track"><div class="rd-bar-fill" style="background:var(--accent);width:${pgPct}%"></div></div>
       <div class="rd-streak-row">${sBadge(pgStreak,'var(--accent)')}
-        <span style="font-size:11px;color:var(--text-3)">consecutive weeks ≥ 25 pages</span>
+        <span style="font-size:11px;color:var(--text-3)">consecutive weeks ≥ 100 pages</span>
       </div>
     </div>
     <div class="rd-prog-wrap">
       <div class="rd-prog-hdr">
         <span class="rd-prog-title">Writing — this week</span>
-        <span class="rd-prog-vals"><span class="num">${moWds.toLocaleString()}</span> / 250 words</span>
+        <span class="rd-prog-vals"><span class="num">${moWds.toLocaleString()}</span> / 1,000 words</span>
       </div>
       <div class="rd-bar-track"><div class="rd-bar-fill" style="background:#8b5cf6;width:${wdPct}%"></div></div>
       <div class="rd-streak-row">${sBadge(wdStreak,'#8b5cf6')}
-        <span style="font-size:11px;color:var(--text-3)">consecutive weeks ≥ 250 words</span>
+        <span style="font-size:11px;color:var(--text-3)">consecutive weeks ≥ 1,000 words</span>
       </div>
     </div>
   </div>
