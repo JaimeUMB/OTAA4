@@ -7862,7 +7862,7 @@ function renderReadingHome(el,sliderHtml){
   const wdStreak=rdWeekStreak('writing','words_written',1000);
   const sBadge=(n,col)=>n===0
     ?`<span class="rd-streak-badge" style="background:color-mix(in oklab,${col} 10%,var(--bg-2));color:${col}">No streak yet</span>`
-    :`<span class="rd-streak-badge" style="background:color-mix(in oklab,${col} 10%,var(--bg-2));color:${col}">${n} month${n>1?'s':''}</span>`;
+    :`<span class="rd-streak-badge" style="background:color-mix(in oklab,${col} 10%,var(--bg-2));color:${col}">${n} week${n>1?'s':''}</span>`;
   // ── Weekly time breakdown for donut ─────────────────────────────────────────
   const wkReadMins=wkRd.filter(a=>!a.activity_type||a.activity_type==='reading').reduce((s,a)=>s+(a.duration_min||0),0);
   const wkWriteMins=wkRd.filter(a=>a.activity_type==='writing').reduce((s,a)=>s+(a.duration_min||0),0);
