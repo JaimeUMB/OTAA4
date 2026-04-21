@@ -11653,7 +11653,7 @@ document.addEventListener('change',function(e){
   const t=e.target;
   if(!t.classList.contains('arc-chk'))return;
   const iso=t.getAttribute('data-date');
-const wkRd=rdAll.filter  if(t.checked){
+  if(t.checked){
     if(typeof APP.markComplete==='function')APP.markComplete(iso);
     if(typeof saveState==='function')saveState();
     if(typeof showToast==='function')showToast('Session marked complete ✓');
